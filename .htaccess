@@ -1,0 +1,8 @@
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(?:config|database|includes|backups|vendor)(?:/|$) - [F,NC,L]
+    RewriteRule ^(?:test_[^/]*\.php|README\.md|composer(?:\.(?:json|lock))?)$ - [F,NC,L]
+    RewriteRule \.(?:sql|log|bak)$ - [F,NC,L]
+</IfModule>

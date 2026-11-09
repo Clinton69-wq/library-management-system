@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "*.php",
+      "use": "vercel-php@0.7.3"
+    },
+    {
+      "src": "api/*.php",
+      "use": "vercel-php@0.7.3"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/database/(.*)",
+      "status": 403
+    },
+    {
+      "src": "/config/(.*)",
+      "status": 403
+    },
+    {
+      "src": "/includes/(.*)",
+      "status": 403
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}
