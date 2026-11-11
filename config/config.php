@@ -69,7 +69,9 @@ if (!defined('OTP_DEMO_MODE')) {
  * Even if an attacker dumps the entire SQL database (including salts and hashes),
  * they CANNOT perform offline dictionary or rainbow table attacks without this Pepper key!
  */
-define('SYSTEM_PEPPER', 'Sec!Lib2026#GlobalP@pperKey_v9x!84Kx#90_CloudflareVault');
+if (!defined('SYSTEM_PEPPER')) {
+    define('SYSTEM_PEPPER', getenv('SYSTEM_PEPPER') ?: 'Sec!Lib2026#GlobalP@pperKey_v9x!84Kx#90_CloudflareVault');
+}
 
 // Application Details
 define('APP_NAME', 'ApexLib Cloud Library System');
@@ -96,11 +98,11 @@ if (!defined('BASE_URL')) {
 }
 
 // Cloudflare Storage Defaults for Backup Records
-define('CF_ACCOUNT_ID', 'cf_acc_98a72e41c09b882');
-define('CF_R2_BUCKET', 'apex-library-r2-vault');
-define('CF_REGION', 'auto');
-define('CF_ZONE_ID', 'cf_zone_3049284028304928');
-define('CF_ENDPOINT_HOST', 'https://r2.cloudflarestorage.com/apex-library-r2-vault');
+define('CF_ACCOUNT_ID', getenv('CF_ACCOUNT_ID') ?: 'cf_acc_98a72e41c09b882');
+define('CF_R2_BUCKET', getenv('CF_R2_BUCKET') ?: 'apex-library-r2-vault');
+define('CF_REGION', getenv('CF_REGION') ?: 'auto');
+define('CF_ZONE_ID', getenv('CF_ZONE_ID') ?: 'cf_zone_3049284028304928');
+define('CF_ENDPOINT_HOST', getenv('CF_ENDPOINT_HOST') ?: 'https://r2.cloudflarestorage.com/apex-library-r2-vault');
 
 // Backups Directory on Local Storage
 define('BACKUP_DIR', __DIR__ . '/../backups');

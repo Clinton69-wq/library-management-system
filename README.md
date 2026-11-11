@@ -62,3 +62,15 @@ These seeded accounts are for local evaluation only. Change or remove their pass
 - Configure SMTP with an app-specific password so login and password-reset OTPs can be delivered.
 - The root `.htaccess` blocks direct access to configuration, installer, backup, and test paths. Do not upload `database/setup.php` to a live site; it resets tables.
 - Do not use `database/schema.sql` to migrate existing data because it drops and recreates tables. Export the current database and import that dump into a newly created hosting database.
+
+## Vercel Deployment
+
+The repository includes a Vercel PHP function router in `api/index.php` and routing configuration in `vercel.json`. Before deploying:
+
+1. Link the repository to the intended Vercel project and set the variables in `.env.example` in the Vercel project's Environment Variables settings. `.env.example` is a template, not a file to upload as production configuration. Keep `APP_BASE_URL=/` for a domain-root deployment. Use a remotely reachable MySQL/MariaDB database; `127.0.0.1` refers to the serverless function itself, not your local XAMPP database.
+2. To migrate existing accounts without forcing password resets, set `SYSTEM_PEPPER` to the current secret from your private `config/config.php`. Keep the same secret private. If you rotate it, existing password hashes will no longer verify and users will need password resets.
+3. Export the current database and import it into a newly created hosting database. Do not run `database/schema.sql` against that database: it drops and recreates tables. Back up the export securely and verify the imported records before directing production traffic.
+4. Configure SMTP and set `OTP_DEMO_MODE=0` for production. Do not expose OTPs in the sign-in page.
+5. Deploy and verify sign-in, registration, and OTP delivery against the production database before switching users over.
+
+Vercel function filesystems are ephemeral. Locally generated SQL backup files are not durable storage on Vercel; use a persistent, separately configured backup destination before relying on backups in production.
