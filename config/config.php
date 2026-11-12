@@ -53,7 +53,13 @@ if (!defined('SMTP_FROM_NAME')) {
     define('SMTP_FROM_NAME', getenv('SMTP_FROM_NAME') ?: 'ApexLib Cloud Library System');
 }
 if (!defined('OTP_DEMO_MODE')) {
-    define('OTP_DEMO_MODE', getenv('OTP_DEMO_MODE') === '1');
+    $demoVal = getenv('OTP_DEMO_MODE');
+    if ($demoVal !== false && $demoVal !== null) {
+        define('OTP_DEMO_MODE', $demoVal === '1' || $demoVal === 'true');
+    } else {
+        // In demo/test environments without SMTP, show OTP code banner in UI
+        define('OTP_DEMO_MODE', empty(SMTP_HOST));
+    }
 }
 
 /**
@@ -84,15 +90,23 @@ if (!defined('APP_ENV')) {
 }
 if (!defined('BASE_URL')) {
     $baseUrl = getenv('APP_BASE_URL');
-    if ($baseUrl === false) {
-        $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
-        $runningFromCli = PHP_SAPI === 'cli' && empty($_SERVER['HTTP_HOST']);
-        $baseUrl = $runningFromCli || $scriptName === ''
-            ? '/libary'
-            : str_replace('\\', '/', dirname($scriptName));
-        if ($baseUrl === '.') {
+    if ($baseUrl === false || $baseUrl === null || $baseUrl === '') {
+        // When running on Vercel serverless router, root domain is '/'
+        if (!empty($_ENV['VERCEL']) || !empty($_SERVER['VERCEL']) || str_contains($_SERVER['SCRIPT_NAME'] ?? '', '/api/')) {
             $baseUrl = '';
+        } else {
+            $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+            $runningFromCli = PHP_SAPI === 'cli' && empty($_SERVER['HTTP_HOST']);
+            $baseUrl = $runningFromCli || $scriptName === ''
+                ? '/libary'
+                : str_replace('\\', '/', dirname($scriptName));
+            if ($baseUrl === '.' || $baseUrl === '/' || $baseUrl === '/api') {
+                $baseUrl = '';
+            }
         }
+    }
+    if ($baseUrl === '/') {
+        $baseUrl = '';
     }
     define('BASE_URL', rtrim($baseUrl, '/'));
 }
